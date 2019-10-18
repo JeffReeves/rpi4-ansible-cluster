@@ -1,18 +1,28 @@
 ---
 - hosts: rpis
   tasks: 
-    - name: "Set Default Runlevel to Multi-User Target"
+    - name: "Set Default Runlevel to Multi-User.Target"
       block:
       - name: "Get Current Target/Runlevel"
         command: "systemctl get-default"
-        register: default_target
-        changed_when: 
-          - default_target.stdout != "multi-user.target"
-        failed_when:
-          - default_target.rc != 0
+        register: result
+        changed_when: False
+        failed_when: result.rc != 0
 
       - debug:
-          msg: "Current system default runlevel: {{ default_target.stdout }}"
+          msg: "{{ result }}"
+        when: result.changed
+
+      - name: "Set Default Target/Runlevel"
+        become: yes
+        command: "systemctl set-default multi-user.target"
+        register: result
+        changed_when: result.stderr != ""
+        failed_when: result.rc != 0
+
+      - debug:
+          msg: "{{ result }}"
+        when: result.changed
 
 - hosts: master
   tasks: 
