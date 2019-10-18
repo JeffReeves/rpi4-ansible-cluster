@@ -1,0 +1,35 @@
+---
+- hosts: rpis
+  tasks: 
+    - name: "Set Default Runlevel to Multi-User Target"
+      block:
+      - name: "Get Current Target/Runlevel"
+        command: "systemctl get-default"
+        register: default_target
+        changed_when: 
+          - default_target.stdout != "multi-user.target"
+        failed_when:
+          - default_target.rc != 0
+
+      - debug:
+          msg: "Current system default runlevel: {{ default_target.stdout }}"
+
+- hosts: master
+  tasks: 
+    - name: "Get Hostname of Master"
+      block:
+      - command: "hostname"
+        register: hostname
+
+      - debug:
+          msg: "Hostname: {{ hostname.stdout }}"
+
+- hosts: workers
+  tasks: 
+    - name: "Get Hostname of Workers"
+      block:
+      - command: "hostname"
+        register: hostname
+
+      - debug:
+          msg: "Hostname: {{ hostname.stdout }}"
