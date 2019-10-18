@@ -1,0 +1,21 @@
+---
+all:
+  children:
+    controllers:
+      hosts:
+        toyota:
+
+    computes:
+      hosts:
+        corolla:
+        supra:
+        mr2:
+
+    rpis:
+      children:
+        controllers:
+        computes:
+
+    lab:
+      children:
+        rpis:
