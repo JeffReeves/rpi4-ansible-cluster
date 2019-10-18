@@ -1,11 +1,11 @@
 ---
 all:
   children:
-    controllers:
+    master:
       hosts:
         toyota:
 
-    computes:
+    workers:
       hosts:
         corolla:
         supra:
@@ -13,8 +13,8 @@ all:
 
     rpis:
       children:
-        controllers:
-        computes:
+        master:
+        workers:
 
     lab:
       children:
