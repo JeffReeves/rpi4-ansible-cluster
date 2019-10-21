@@ -1,5 +1,16 @@
 ---
 
+- name: "Add Cluster to /etc/hosts File"
+  lineinfile:
+    path: "/etc/hosts"
+    line: "{{ item }}"
+    mode: 644
+    owner: root
+    group: root
+    backup: true
+  with_items:
+    "{{ cluster }}"
+
 - name: "Set Default Runlevel to Multi-User.Target"
   block:
   - name: "Get Current Target/Runlevel"
