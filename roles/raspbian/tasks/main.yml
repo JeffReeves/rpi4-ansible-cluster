@@ -13,7 +13,6 @@
     when: result.changed
 
   - name: "Set Default Target/Runlevel"
-    become: yes
     command: "systemctl set-default multi-user.target"
     register: result
     changed_when: result.stderr != ""
@@ -24,7 +23,6 @@
     when: result.changed
 
 - name: "Update Packages to the Latest"
-  become: yes
   apt:
     update_cache: yes
     cache_valid_time: 86400
@@ -34,7 +32,6 @@
   # failed_when: result.rc != 0
 
 - name: "Activate cgroup on Raspbian"
-  become: yes
   lineinfile:
     path: "/boot/cmdline.txt"
     regexp: '^(.*rootwait)$'
