@@ -1,0 +1,3 @@
+- name: Reboot Raspbian
+  reboot:
+    reboot_timeout: 3600

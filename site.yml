@@ -1,0 +1,14 @@
+---
+- hosts: rpis
+  gather_facts: yes
+  roles:
+    - "raspbian"
+    - "k3s/download"
+
+- hosts: master
+  roles:
+    - "k3s/master"
+
+- hosts: workers
+  roles:
+    - "k3s/worker"

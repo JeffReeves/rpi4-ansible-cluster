@@ -1,0 +1,17 @@
+---
+
+- name: "Template k3s Systemd Service File"
+  become: yes
+  template:
+    src: "k3s.service.j2"
+    dest: "{{ systemd_dir }}/k3s.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Enable and Check k3s Systemd Service"
+  systemd:
+    name: k3s
+    enabled: yes
+    state: restarted
+    daemon_reload: yes

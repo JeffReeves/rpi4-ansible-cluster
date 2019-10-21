@@ -1,0 +1,33 @@
+---
+
+- name: "Delete Any Existing k3s"
+  become: yes
+  file:
+    path: "{{ k3s_bin }}"
+    state: absent
+
+- name: "Download k3s Binary"
+  block:
+    - name: "Download for arm64 (64 bit)"
+      become: yes
+      get_url:
+          url: "{{ k3s_base_url }}/k3s-arm64"
+          dest: "{{ k3s_bin }}"
+          owner: root
+          group: root
+          mode: 755
+      when: ( ansible_facts.architecture is search("arm") )
+              and
+            ( ansible_facts.userspace_bits == "64" )
+
+    - name: "Download for armhf (32 bit)"
+      become: yes
+      get_url:
+          url: "{{ k3s_version }}/k3s-armhf"
+          dest: "{{ k3s_bin }}"
+          owner: root
+          group: root
+          mode: 755
+      when: ( ansible_facts.architecture is search("arm") )
+              and
+            ( ansible_facts.userspace_bits == "32" )

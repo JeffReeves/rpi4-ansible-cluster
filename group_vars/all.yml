@@ -1,0 +1,13 @@
+---
+
+k3s_version: "v0.9.1"
+k3s_base_url: "https://github.com/rancher/k3s/releases/download/{{ k3s_version }}"
+k3s_bin: "/usr/local/bin/k3s"
+k3s_node_dir: "/var/lib/rancher/k3s/server"
+k3s_node_token: "{{ k3s_node_dir }}/node-token"
+
+ansible_user: "jeff"
+
+systemd_dir: "/etc/systemd/system"
+
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"

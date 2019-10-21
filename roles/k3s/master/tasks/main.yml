@@ -1,0 +1,64 @@
+---
+
+- name: "Template k3s Systemd Service File"
+  become: yes
+  template:
+    src: "k3s.service.j2"
+    dest: "{{ systemd_dir }}/k3s.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Enable and Check k3s Systemd Service"
+  systemd:
+    name: k3s
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    
+- name: "Wait for node-token"
+  wait_for:
+    path: "{{ k3s_node_token }}"
+
+- name: "Register node-token File Stats"
+  stat:
+    path: "{{ k3s_node_dir }}"
+  register: node_token_file
+
+- name: "Change Permissions to node-token File (755)"
+  file:
+    path: "{{ k3s_node_dir }}"
+    mode: "g+rx,o+rx"
+
+- name: "Register node-token Contents from Master"
+  slurp:
+    src: "{{ k3s_node_token }}"
+  register: node_token
+
+- name: "Set Fact for Master node-token"
+  set_fact: 
+   token: "{{ node_token.content | b64decode | regex_replace('\n', '') }}"
+
+- name: "Revert Permissions to node-token File"
+  file:
+    path: "{{ k3s_node_dir }}"
+    mode: "{{ node_token_file.stat.mode }}"
+
+- name: "Create User ~/.kube Directory"
+  file:
+    path: "/home/{{ ansible_user }}/.kube"
+    owner: "{{ ansible_user }}"
+    state: directory
+    
+- name: "Copy k3s Config File to User's Kube Directory"
+  copy:
+    src: "/etc/rancher/k3s/k3s.yaml"
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    remote_src: yes
+    
+- name: "Replace https://localhost:6443 with https://master-pi:6443 in Conf File"
+  replace:
+    path: "/home/{{ ansible_user }}/.kube/config"
+    regexp: 'https://localhost:6443'
+    replace: 'https://{{ master_ip }}:6443'

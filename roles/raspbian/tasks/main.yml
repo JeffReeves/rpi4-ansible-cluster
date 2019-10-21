@@ -1,0 +1,45 @@
+---
+
+- name: "Set Default Runlevel to Multi-User.Target"
+  block:
+  - name: "Get Current Target/Runlevel"
+    command: "systemctl get-default"
+    register: result
+    changed_when: False
+    failed_when: result.rc != 0
+
+  - debug:
+      msg: "{{ result }}"
+    when: result.changed
+
+  - name: "Set Default Target/Runlevel"
+    become: yes
+    command: "systemctl set-default multi-user.target"
+    register: result
+    changed_when: result.stderr != ""
+    failed_when: result.rc != 0
+
+  - debug:
+      msg: "{{ result }}"
+    when: result.changed
+
+- name: "Update Packages to the Latest"
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    upgrade: dist
+  # register: result
+  # changed_when: False
+  # failed_when: result.rc != 0
+
+- name: "Activate cgroup on Raspbian"
+  become: yes
+  lineinfile:
+    path: "/boot/cmdline.txt"
+    regexp: '^(.*rootwait)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+    backrefs: true
+  when: ( ansible_facts.architecture is search "arm" )
+  notify:
+    - "Reboot Raspbian"
