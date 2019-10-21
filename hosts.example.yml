@@ -3,13 +3,13 @@ all:
   children:
     master:
       hosts:
-        toyota:
+        triforce:
 
     workers:
       hosts:
-        corolla:
-        supra:
-        mr2:
+        link:
+        zelda:
+        ganon:
 
     rpis:
       children:
