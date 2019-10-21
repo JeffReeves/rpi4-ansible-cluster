@@ -1,7 +1,0 @@
----
-
-- name: Set up Raspberry Pi 4B Lab Cluster
-  hosts: rpis
-  roles:
-    - rpi4        # coming in the future (manual steps documented for now)
-    - kubernetes
