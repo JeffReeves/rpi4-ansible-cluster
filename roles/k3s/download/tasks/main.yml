@@ -20,7 +20,7 @@
 
     - name: "Download for armhf (32 bit)"
       get_url:
-          url: "{{ k3s_version }}/k3s-armhf"
+          url: "{{ k3s_base_url }}/k3s-armhf"
           dest: "{{ k3s_bin }}"
           owner: root
           group: root
